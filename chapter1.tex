@@ -1,0 +1,132 @@
+\chapter{Credit Risk Modelling : Structural Models}
+
+To value credit derivatives it is necessary to be able to model credit risk.
+2 used approaches to model credit risk are -
+\begin{enumerate}
+    \item \textbf{Structural models or firm value models} - company defaults on its debt if the value of the assets of the company falls below a certain default point.
+    \begin{itemize}
+        \item Fisher black and myron scholes - how equity owners hold a call option on the firm.
+        \item Black scholes merton model - robert merton extended the framework and analyzed risk debt behavior with the model.
+        \item Robert Geske extended the BSM model to include multiple debts.
+    \end{itemize}
+    \item \textbf{Reduced form models} - do not look inside the firm, they model directly the likelihood of default or downgrade
+    \begin{itemize}
+        \item Jarrow-Turnbull
+        \item Duffie-singleton
+    \end{itemize}
+\end{enumerate}
+
+\section{Complexities in credit risk modelling}
+\textbf {Default risk} - It  is a result of an inability to pay for corporate debtors. It is a very rare event. It is not an universal concept.
+
+\begin{itemize}
+    \item Causes of defaulting
+    \begin{itemize}
+        \item Microeconomic factor : poor management
+        \item Macroeconomic factors : high interest rates and recession
+    \end{itemize}
+\end{itemize}
+
+\textcolor{red}{write about concept of senior creditors are paid before other creditors.}
+
+\section{Overview of current model}
+Credit risk models used by the insurance and corporate finance literature concentrate on default rates, credit ratings, and credit risk premiums. Traditional models assume default risk can be diversified away in large portfolios similar to portfolio theory that employs the CAPM where only market/systematic risk matters. 
+
+\section{The black-scholes-merton model}
+Corporate liabilities can be viewed as a covered call. \\
+covered call : own the asset but short a call option.\\
+Debt holder : the investor/creditor who lends the money based on an agreement to be paid back more than what is lend today.
+E(t) : market value of the issued equity.\\
+D(t,T) : market value of the debt at time t Maturing at T.\\
+K : face value of the zero coupon bond maturing at time T.\\
+T : maturity of the debt
+
+At time T, the market value of the issued equity of the company is the amount remaining after the debts have been paid out of the firm's asset; i.e. 
+\begin{align}
+E(T) = \max\{A(T)-K, 0\}    
+\end{align}
+This payoff is similar to that of a call option on value of the firm's asset struck at the face value of the debt.
+
+\par Hence the value of the debt on the maturity date is given by - 
+\begin{align}
+D(T,T) &= min(A(T),K) \\
+&= A(T)-max(A(T)-K,0) \label{eq:interpretation1} \\
+&= K-max(K-A(T),0) \label{eq:interpretation2}
+\end{align}
+
+Equation \ref{eq:interpretation1} decomposes the risky debt into asset and a short call. This interpretation shows that the equity owners owns the call option of the company. If the company performs well, then equity holders should call the company. \\
+Equation \ref{eq:interpretation2} decomposes the risky debt into a risk-free debt and a short put.The issuer(equity owners) can put the company back to the debt owner when the performance is bad. Hence the default risk = put option. \\
+\textcolor{red}{paste the graphs here and explain them a bit}
+\begin{align}
+A(t)=E(t)+D(t,T)
+\end{align}
+\textcolor{red}{
+Compare\\ 
+A(t) with S(t) \\
+E(t) with V(t) \\ }
+
+Since any corporate debt is contingent (dependent) claim on the form's future asset value at the time the debt matures, this is what we must model in order to capture the default. BSM assumed the dynamics of the asset value follow a lognormal stochastic process of the form
+\begin{align}
+    \frac{dA(t)}{dt} = rdt+{\sigma}dW(t)
+\end{align}
+where : \begin{align*}
+r &= \text{instantaneous risk-free rate(assumed constant)} \\
+\sigma &= \text{precentage volatility} \\
+W(t) &= \text{Wiener process under risk neutral measure}
+\end{align*}
+Since same assumption as in equity markets for the evolution of stock prices.
+\begin{itemize}
+    \item $A(t)\geq0$
+    \item $dA(t) \propto A(t)$
+\end{itemize}
+It is possible to use the option pricing equation developed by BSM to price risky corporate liabilities.
+
+$\text{At t}=T :$ 
+\[ A(T) \geq K \implies \text{No default} \]
+\[ A(T) < K \implies \text{Default} \]
+The probability of defaulting at maturity is 
+\begin{align}
+    p = \int_{-\infty}^K \phi(A(T)) \, dA(T)=1-N(d_2) \label{eq:defaultProbability}
+\end{align}
+where :\begin{align*}
+\phi(.) &= \text{log normal density function} \\
+N(.) &= \text{cummulative normal probability } \\
+d_2 &= \frac{\ln{\frac{A(t)}{K}}+(r-\frac{\sigma^2}{2})(T-t)}{\sigma\sqrt{T-t}}
+\end{align*}
+$N(d_2)$ is the \textbf{suvival probability}. 
+USing BSM to find the currentvalue of the equity.We have,
+\begin{align}
+    E(t)=A(t)N(d_1)-e^{-r(T-t)}KN(d_2)
+\end{align}
+where \begin{align*}
+    d_1 = d_2+\sigma\sqrt{T-t}
+\end{align*}
+The current value of the debt is a covered call value : 
+\begin{align}
+    D(t,T)&=A(t)-E(t) \\
+    &=A(t)-[A(t)N(d_1)-e^{-r(T-t)}KN(d_2)] \\
+    &=A(t)[1-N(d_1)]+e^{-r(T-t)}KN(d_2) \label{prob-weighted}
+\end{align}
+NOTE : first term in \ref{prob-weighted} is the \textbf{\textit{recovery value}} whereas the second term is the \textbf{\textit{present value of probability weighted face value of the debt}}.
+\par Yield of the debt(y) is calculated by solving 
+\begin{align}
+    D(t,T)=Ke^{-y(T-t} \\
+    y = \frac{\ln{K}-\ln{D(t,T)}}{T-t}
+\end{align}
+
+\section{Implications of BSM model}
+increase in debt-to-asset $\implies$ increase in risky yield \\
+\textcolor{red}{write code to plot the y-r Vs T graph (maturity dependency of the credit spread)}\\
+\par The general downward trend of these spread curves at the long end due to the fact that on average the asset value grows at the riskless rate, and so given enough time, will always grow to cover the fixed debt.
+
+\section{Geske compound option model}
+Now let us look at the case where company has a series of debts (zero coupon). Defaults are a series of contingent events. Later defaults are contingent upon prior no-default.\\
+company may default when : 
+\begin{itemize}
+    \item $A(T_1)<K_1$ (i.e fails to pay its first debt)
+    \item $A(T_1)<K_1+Market\_value(K_2)$
+\end{itemize}
+
+\section{Barrier structural model}
+This model also extends BSM model to multiple periods. This model views defaults as knockout options (down and out barrier)
+

@@ -1,0 +1,130 @@
+\chapter{Credit Risk Modelling : Reduced form Models}
+Mainly represented by \textbf{Jarrow-Turnbull} and \textbf{Duffie-Singleton}\\
+Properties of these models: 
+\begin{itemize}
+    \item arbitrage free
+    \item employ risk neutral measure to price securities
+    \item default is exogenous 
+    \item The computations of debt values of different maturities are independent
+\end{itemize}
+
+\section{The poisson process}
+It is the theoretical framework for reduced form models.\\
+Let the value be $N_t$ at time t and $\lambda$ be the intensity parameter.
+\[ P(N_{t+dt}-N_t=1)=\lambda dt \]
+\[ P(N_{t+dt}-N_t=0)=1-\lambda dt \]
+ 
+As $dt$ is small, there is negligible probability of two jumps occurring in the same time interval.
+
+When the poisson process jump from 0 to 1 is viewed as default in reduced form models.
+Time taken till first default event will give \textbf{default time distribution}.
+\[ P(T>t)=e^{-\lambda(T-t)} \]
+The survival probability before time t :
+\[Q(t,T)=p(T>t)=e^{-\lambda(T-t)}\]
+
+\section{The Jarrow-Turnbull model}
+Assumption : The recovery payment will be paid at maturity in case of defaults.
+The coupon bond value is given as : 
+\begin{align*}
+    B(t)&=p(t,T)R(T)\int_{t}^{T}{-dQ(t,u)du}+\sum_{j=1}^{n}{P(t,T_j)c_je^{-\lambda(T_j-t)}} \\
+    &=P(t,T)R(T)(1-e^{-\lambda(T-t)})+\sum_{j=1}^{n}{P(t,T_j)c_je^{-\lambda(T_j-t)}}
+\end{align*}
+where : \begin{align*}
+P(t,T) &= \text{risk-free discount factor} \\
+c_j &= \text{j-th coupon} \\
+Q(t,T) &= \text{survival probability up to time t} \\
+R &= \text{recovery ratio} \\
+\end{align*}
+if R = 0 , zero coupon bond with face value = \$1 then :
+\[B(t)=P(t,T)e^{-\lambda(T-t)}\]
+this equation is comparable with one-period binomial model with bond's forward yield spread y
+\[D(t,T)=P(t,T)e^{-y(T-t)}\]
+Therefore intensity parameter $\lambda$ is the bond's forward yield spread in this case.
+D(t,T) is known as the \textbf{risky discount factor},  which is the present value of \$1 if there is no default.
+
+\par If $\lambda$ is a function of time and the recovery is paid at the time of default then
+\begin{align*}
+    B(t)&=\int_{t}^{T}{p(t,u)R(u)(-dQ(u))}+\sum_{j=1}^{n}{P(t,T_j)c_jQ(t,T_j)} \\
+    &=\int_{t}^{T}{P(t,u)R(u)\lambda(u)e^{-\int_{t}^{u}{\lambda(w)dw}}}+\sum_{j=1}^{n}{P(t,T_j)c_je^{-\int_{t}^{T_j}{\lambda(w)dw}}}
+\end{align*}
+To actually implement this equation, we take $\lambda$ to be constant in adjacent time points.
+If we further assume that default can occur only at coupon times then
+\begin{align*}
+    B(t)&=\sum_{j=1}^{n}{P(t,T_j)R(T_j)\lambda(T_j)e^{-\sum_{k=1}^{j}{\lambda(T_k)}}}+\sum_{j=1}^{n}{P(t,T_j)c_je^{-\sum_{k=1}^{n}{\lambda(T_k)}} }
+\end{align*}
+
+\subsection{The calibration of Jarrow-Turnbull model}
+Since a debt contract pays interest under survival and pays recovery upon default, the expected payment is naturally the weighted average of the two payoffs. \\
+From now on let the survival probability from now to any future time $t$ be $Q(0,t)$.
+Therefore $Q(0,s)-Q(0,t)$ where $s>t$ is the default probability between two future time points t and s.
+\begin{itemize}
+    \item \textbf{Geske Model} : asset value is recovered.
+    \item \textbf{Duffie-Singleton Model} : fraction of the market debt value is recovered.
+    \item \textbf{Jarrow-Turnbull Model} : arbitrary recovery value is assumed.
+\end{itemize}
+Forward default probability is the difference of two survivals weighted by the previous survival as shown below:
+\begin{align*}
+    p(j-1,j)=\frac{Q(0,j-1)-Q(0,j)}{Q(0,j-1)} \label{eq:forwarddefaultProb}
+\end{align*}
+Default probability increases with the increase in the recovery value.
+\textcolor{red}{Draw the plot to show above thing}. If the default probability is kept constant then the bond should be priced above par.
+\textcolor{red}{take constant default probability and show that the bond price increases with increase in the recovery value}
+\subsection{Transition Matrix}
+Now we can even incorporate the rating changes called migration risk.This extended model is called Jarrow,Lando and Turnbull. Migration risk is different from default risk in that a downgrade in credit ratings only widens the credit spread of the debt issuer and does not cause default. No default means no recovery to worry about. 
+\subsection{conclusion}
+\begin{itemize}
+    \item It generates closed form solution for the bond price.
+\end{itemize}
+Drawbacks compared to reality:
+\begin{itemize}
+    \item recovery actually occurs upon(or soon after) default.
+    \item recovery amount can fluctuate randomly over time.
+    \item recovery rate being exogenously specified percentage of the default-free recovery, may actually exceed the price of the bond at the moment of default. 
+\end{itemize}
+
+\section{The Duffie-Singleton model (fractional recovery model) }
+\begin{itemize}
+    \item This model allows the payment of recovery to occur at any time.
+    \item the amount of recovery is restricted to be the proportional of the bond price at default time.
+\end{itemize}
+\[ R(t)=\delta D(t,T) \]
+where : \begin{align*}
+R(t) &= \text{recovery ratio} \\
+\delta &= \text{fixed ratio} \\
+D(t,T) &= \text{debt value if default did not occur} \\
+\end{align*}
+The debt value at time t is given by 
+\[ D(t,T)=\frac{1}{1+r\Delta t}\{ p\delta E[D(t+\Delta t,T)]+(1-p)E[D(t+\Delta t,T)]\} \]
+By recursive substitution, current value of the bond as its terminal payoff if no default occurs : 
+\[ D(t,T)= \left[\frac{1-p\Delta t(1-\delta)}{1+r\Delta t}\right] ^nX(T) \]
+The instantaneous default probability being $p\Delta t$ is consistent with Poisson distribution,
+\[ -\frac{dQ}{Q}=p\Delta t \]
+\begin{align}
+D(t,T)=\frac{exp(-p(1-\delta)T)}{exp(rT)}X(T) = exp(-(r+s)T)X(T)\label{eq:debt}
+\end{align}
+when r and s are not constant, \ref{eq:debt} can be written as follows,
+\[D(t,T)=E_t\left[exp\left(\int_{t}^{T}[r(u)+s(u)]du\right)\right]X(T)\]
+where $ s(u) = p_u(1-\delta) $ \\
+\textbf{Intuitive interpretation} : $p(1-\delta)$ serves as spread over the risk-free discount rate.
+\begin{itemize}
+    \item p is small $\implies$ credit spread is small
+    \item R(t) is high (i.e 1-$\delta$ is small) $\implies$ credit spread is small
+\end{itemize}
+\subsection{Disadvantages}
+\begin{itemize}
+    \item If contract has no payoff at maturity such as CDS then it implies zero value today which is not true.
+\end{itemize}
+
+\section{General observations on reduced form models}
+They are easy to calibrate as default probabilities and recovery are exogenously specified.
+They suffer from the constraint that default is always a surprise. This is rare, defaults is usually the end of a series of downgrades and spread widenings.The Jarrow-Turnbull and Duffie-Singleton models assume that defaults occur unexpectedly and follow the Poisson process. This assumption greatly reduces the complexity since the Poisson process has very nice mathematical properties. In order to further simplify the model, Jarrow Turnbull and Duffie-Singleton respectively make other assumptions so that there exist closed-form solutions to the basic underlying asset.
+
+\section{other models}
+\subsection{Spread-based models}
+This model uses bond spread to detect default.\\
+Assumption : Asset swap spreads follow a lognormal process of the following kind :
+\[ \frac{ds(t)}{s(t)}=\sigma dW(t) \]
+\[ s(t)=s(0)exp\left( -\frac{\sigma^2 t}{2}+\sigma W(t) \right) \]
+\subsection{Hazard models}
+
+\section{Summary}
